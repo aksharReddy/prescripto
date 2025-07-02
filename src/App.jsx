@@ -9,6 +9,7 @@ import Contact from './pages/Contact';
 import MyAppointments from './pages/MyAppointments'; // ✅ updated path to match your structure
 import Appointment from './pages/Appointment'; // ✅ updated path to match your structure
 import Navbar from './components/Navbar'; // ✅ updated path to match your structure
+import Footer from './components/Footer';
 const App = () => {
   return (
     <div className='mx-4 sm:mx-[10%]'>
@@ -24,6 +25,7 @@ const App = () => {
         <Route path='/my-appointments' element={<MyAppointments />} />
         <Route path='/appointment/:docId' element={<Appointment />} />
       </Routes>
+      <Footer/>
     </div>
   );
 };
