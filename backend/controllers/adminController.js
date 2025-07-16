@@ -58,7 +58,7 @@ const addDoctor = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
-
+//api for login
 const loginAdmin = async (req, res) => {
     try {
         const { email, password } = req.body
@@ -75,4 +75,14 @@ const loginAdmin = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
-export {addDoctor,loginAdmin}
+
+const AllDoctors = async(req,res) => {
+    try {
+        const doctors = await doctorModel.find({}).select('-password');
+        res.json({ success: true, doctors });
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+export {addDoctor,loginAdmin ,AllDoctors}
