@@ -10,9 +10,12 @@ import MyAppointments from './pages/MyAppointments'; // ✅ updated path to matc
 import Appointment from './pages/Appointment'; // ✅ updated path to match your structure
 import Navbar from './components/Navbar'; // ✅ updated path to match your structure
 import Footer from './components/Footer';
+import { ToastContainer, toast } from 'react-toastify';
 const App = () => {
   return (
+   
     <div className='mx-4 sm:mx-[10%]'>
+       <ToastContainer/>
       { <Navbar />  }
       <Routes>
         <Route path='/' element={<Home />} />

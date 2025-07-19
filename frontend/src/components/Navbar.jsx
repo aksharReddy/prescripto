@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import logo from '../assets/logo.svg';
 import profile_pic from '../assets/profile_pic.png';
 import dropdown_icon from '../assets/dropdown_icon.svg';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { AppContext } from '../context/AppContext';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
-  const [token, setToken] = useState(true);
+    const {token, setToken} = useContext(AppContext);
  
-
+const logout = () => {
+    setToken('');
+    localStorage.removeItem('token');
+}
   return (
     <div className="flex items-center justify-between p-4 border-b shadow-sm">
       
@@ -114,7 +118,7 @@ const Navbar = () => {
                     className="cursor-pointer hover:bg-gray-100 hover:text-blue-500 p-2 rounded"
                     onClick={() => {
                       setShowMenu(false);
-                      setToken(false);
+                        logout();
                     }}
                   >
                     Logout

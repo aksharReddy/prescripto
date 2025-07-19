@@ -1,6 +1,13 @@
-import React, { useState } from 'react'
-
+import React, { use, useState } from 'react'
+import { useContext } from 'react'
+import { AppContext } from '../context/AppContext'
+import {toast} from 'react-toastify'
+import axios from 'axios'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 const Login = () => {
+    const {backendUrl,token,setToken} = useContext(AppContext)
+    const navigate = useNavigate();
 
   const [state, setState] = useState('Sign Up')
 
@@ -8,10 +15,42 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const onSubmitHandler = (event) => {
+  const onSubmitHandler =async (event) => {
     event.preventDefault();
+    try {
+        if(state === 'Sign Up'){
+            const {data} = await axios.post(backendUrl+'/api/user/register', {name ,email, password});
+            if(data.success){
+                setToken(data.token);
+                localStorage.setItem('token',data.token);
+                toast.success('Account created successfully');
+            }
+            else{
+                toast.error(data.message);
+            }
+        }
+        else{
+            const {data} = await axios.post(backendUrl+'/api/user/login', {email, password});
+            if(data.success){
+                setToken(data.token);
+                localStorage.setItem('token',data.token);
+                toast.success('Logged in successfully');
+            }
+            else{
+                toast.error(data.message);
+            }    
+        }
+        
+    } catch (error) {
+        toast.error(error.message || 'Something went wrong while logging in');
+    }
 
   }
+  useEffect(() => {
+    if(token){
+        navigate('/')
+    }
+  }, [token])
 
   return (
     <form onSubmit={onSubmitHandler} className='min-h-[80vh] flex items-center'>
@@ -33,7 +72,7 @@ const Login = () => {
           <p>Password</p>
           <input onChange={(e) => setPassword(e.target.value)} value={password} className='border border-zinc-300 rounded w-full p-2 mt-1' type="password" required />
         </div>
-        <button className='bg-blue-500 text-white w-full py-2 rounded-md text-base'>{state === 'Sign Up' ? 'Create account' : 'Login'}</button>
+        <button type="submit" className='bg-blue-500 text-white w-full py-2 rounded-md text-base'>{state === 'Sign Up' ? 'Create account' : 'Login'}</button>
         {state === 'Sign Up'
           ? <p>Already have an account? <span onClick={() => setState('Login')} className='text-primary underline cursor-pointer'>Login here</span></p>
           : <p>Create an new account? <span onClick={() => setState('Sign Up')} className='text-primary underline cursor-pointer'>Click here</span></p>
