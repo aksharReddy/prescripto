@@ -8,7 +8,7 @@ import { AppContext } from '../context/AppContext';
 const Navbar = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
-    const {token, setToken} = useContext(AppContext);
+    const {token, setToken,userData} = useContext(AppContext);
  
 const logout = () => {
     setToken('');
@@ -81,7 +81,7 @@ const logout = () => {
         {token ? (
           <div className="flex items-center gap-2">
             <img
-              src={profile_pic}
+              src={userData.image || profile_pic}
               alt="Profile"
               className="h-10 w-10 rounded-full cursor-pointer"
               onClick={() => setShowMenu(!showMenu)}
