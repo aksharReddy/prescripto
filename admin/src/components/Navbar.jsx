@@ -4,10 +4,12 @@ import { DoctorContext } from '../context/DoctorContext'
 import { AdminContext } from '../context/AdminContext'
 import { useNavigate } from 'react-router-dom'
 
+
 const Navbar = () => {
 
   
   const { aToken, setaToken } = useContext(AdminContext)
+  const { dToken, setdToken } = useContext(DoctorContext)
 
   const navigate = useNavigate()
 
@@ -15,7 +17,9 @@ const Navbar = () => {
     navigate('/')
     
     aToken && setaToken('')
+    dToken && setdToken('')
     aToken && localStorage.removeItem('aToken')
+    dToken && localStorage.removeItem('dToken')
   }
 
   return (

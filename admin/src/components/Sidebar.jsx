@@ -6,9 +6,11 @@ import appointment_icon from '../assets/appointment_icon.svg'
 import { NavLink } from 'react-router-dom'
 import { useContext } from 'react'
 import { AdminContext } from '../context/AdminContext'
+import { DoctorContext } from '../context/DoctorContext'
 
 const Sidebar = () => {
   const { aToken } = useContext(AdminContext);
+  const { dToken } = useContext(DoctorContext);
 
   const linkClass = ({ isActive }) =>
     `flex items-center gap-2 px-4 py-2 rounded-md text-gray-600 ${
@@ -34,6 +36,23 @@ const Sidebar = () => {
           <NavLink to='/doctors-list' className={linkClass}>
             <img src={people_icon} alt="Doctors List" />
             <p>Doctors List</p>
+          </NavLink>
+        </ul>
+      }
+       {
+        dToken && <ul className='flex flex-col gap-1'>
+          <NavLink to='/doctor-dashboard' className={linkClass}>
+            <img src={home_icon} alt="Home" />
+            <p>Dashboard</p>
+          </NavLink>
+          <NavLink to='/doctor-appointments' className={linkClass}>
+            <img src={appointment_icon} alt="Appointments" />
+            <p>Appointments</p>
+          </NavLink>
+          
+          <NavLink to='/doctor-profile' className={linkClass}>
+            <img src={people_icon} alt="Doctors List" />
+            <p>Profile</p>
           </NavLink>
         </ul>
       }

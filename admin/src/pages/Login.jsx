@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react'
 import { DoctorContext } from '../context/DoctorContext'
 import { AdminContext } from '../context/AdminContext'
 import { toast } from 'react-toastify'
+
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 
 const Login = () => {
@@ -13,14 +14,15 @@ const Login = () => {
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL
 
-  const { setDToken } = useContext(DoctorContext)
+  const { setdToken } = useContext(DoctorContext)
   const { setaToken } = useContext(AdminContext)
-
+  
   const onSubmitHandler = async (event) => {
     event.preventDefault()
 
     try {
       if (state === 'Admin') {
+        console.log('Trying admin login with:', email, password);
         const { data } = await axios.post(backendUrl + 'api/admin/login', { email, password })
         if (data.success) {
           localStorage.setItem('aToken', data.token)
@@ -29,7 +31,21 @@ const Login = () => {
           toast.error(data.message)
         }
       }
+      else{
+        console.log('Trying doctor login with:', email, password);
+
+          const {data} = await axios.post(backendUrl + 'api/doctor/login', { email, password })
+          if(data.success){
+            localStorage.setItem('dToken', data.token)
+            setdToken(data.token)
+            console.log(data.token)
+            
+          }else{
+            toast.error(data.message)
+          }
+      }
     } catch (error) {
+      console.error("Login error:", error)
       toast.error("Login failed")
     }
   }

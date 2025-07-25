@@ -1,6 +1,115 @@
-import React from 'react'
+import React, { use } from 'react'
+import { useContext, useState, useEffect } from 'react'
+import { AppContext } from '../context/AppContext'
+import { toast } from 'react-toastify'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+const slotDateFormat = (dateString) => {
+    // Handle "21_07_2025" format
+    const [day, month, year] = dateString.split('_')
+    if (!day || !month || !year) return dateString
+  
+    const date = new Date(`${year}-${month}-${day}`)  // convert to "2025-07-21"
+  
+    if (isNaN(date)) return dateString
+  
+    return date.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    })
+  }
+  
+  
+
 
 const MyAppointments = () => {
+    const {backendUrl,token,getDoctorsData} = useContext(AppContext)
+const [appointments,setAppointments] = useState([])
+    const navigate = useNavigate()
+const getUserAppointments = async () => {
+   try {
+     const {data} = await axios.get(backendUrl + '/api/user/appointments', {headers: {token}})
+     if(data.success){
+        setAppointments(data.appointments.reverse())
+        console.log(data.appointments)
+     }else{
+        console.log(error)
+        toast.error(data.message)
+     }
+   } catch (error) {
+    
+   }
+}
+
+const cancelAppointment = async (appointmentId) => {
+    try {
+
+        const {data} = await axios.post(backendUrl + '/api/user/cancel-appointment', {appointmentId}, {headers: {token}})
+        if(data.success){
+            toast.success(data.message)
+            getUserAppointments()
+            getDoctorsData()
+        }else{
+            toast.error(data.message)
+        }
+    } catch (error) {
+        console.log(error)
+        toast.error(error.message)
+    }
+
+}
+
+const initPay = (order) => {
+    const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'Appointment Payment',
+        description: 'Payment for appointment booking',
+        order_id: order.id,
+        receipt: order.receipt,
+        handler: async (response) => {
+            try {
+                const {data} =await axios.post(backendUrl + '/api/user/verifyRazorpay',response, {headers: {token}})
+                if(data.success){
+                    toast.success('Payment successful')
+                    getUserAppointments()
+                    navigate('/my-appointments')
+                }else{
+                    console.log(error)
+                    toast.error(data.message)
+                }
+            } catch (error) {
+                
+            }
+           
+            
+    }
+   
+}
+const razorpay = new window.Razorpay(options)
+razorpay.open()
+}
+
+const appointmentRazorpay = async (appointmentId) => {
+    try {
+        const {data} = await axios.post(backendUrl + '/api/user/payment-razorpay', {appointmentId}, {headers: {token}})
+        if(data.success){
+            initPay(data.order)
+        }
+    } catch (error) {
+        console.log(error)
+        toast.error(error.message || 'Something went wrong while processing payment')
+    }
+}
+useEffect(() => {
+    if(token){
+        getUserAppointments()
+    }else{
+        toast.warn('Login to view appointments')
+    }
+}, [token])
   return (
     <div>
         <p className='pb-3 mt-12 text-lg font-medium text-gray-600 border-b'>My appointments</p>
@@ -36,5 +145,7 @@ const MyAppointments = () => {
     </div>
 )
 }
+
+
 
 export default MyAppointments;
